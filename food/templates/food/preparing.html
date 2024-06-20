@@ -1,0 +1,23 @@
+<h1>preparing...</h1>
+<!-- template.html -->
+<script>
+    const userId = '{{ user_id }}'; 
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const socketURL = protocol + window.location.host + `/ws/preparing/${userId}/`;
+
+    const socket = new WebSocket(socketURL);
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+        }
+    };
+    
+    // Send a message
+    socket.onopen = function(event) {
+        socket.send(JSON.stringify({
+            'message': 'Hello server!'
+        }));
+    };
+</script>

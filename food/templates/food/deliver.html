@@ -1,0 +1,49 @@
+<form method="post" action="{% url 'food:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Your Order History</h1>
+{% if orders %}
+    <ul>
+        {% for order in orders %}
+            <li>
+                <form  method="post" action="">
+                    {% csrf_token %}
+                    Order {{ order.id }} from {{ order.created_at }} - ${{ order.get_total }}
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <input type="hidden" name="order_user" value="{{ order.user.id }}">
+                    <button type="submit">Deliver</button>
+                </form>
+            </li>
+
+        {% endfor %}
+    </ul>
+    <script>
+        const orderSocket = new WebSocket('ws://' + window.location.host + '/ws/orders/');
+
+        orderSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const order = data.order;
+
+            const ordersList = document.querySelector('ul');
+            const newOrderItem = document.createElement('li');
+            newOrderItem.innerHTML = `
+                <form method="post" action="">
+                    <input type="hidden" name="order_id" value="${order.id}">
+                    <input type="hidden" name="order_user" value="${order.user_id}">
+                    Order ${order.id} from ${order.created_at} - $${order.get_total}
+                    <button type="submit">Deliver</button>
+                </form>
+            `;
+            ordersList.appendChild(newOrderItem);
+        };
+
+        orderSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    </script>
+{% else %}
+    <p>You have no past orders.</p>
+{% endif %}
+

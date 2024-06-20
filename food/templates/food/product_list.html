@@ -1,0 +1,33 @@
+{% extends "food/home.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+</head>
+<body>
+    {% block content %}
+    {% for product in products %}
+    <div class="row p-2">
+        <div class="col-md-3 offset-md-2">
+            <img src="{{ product.image.url}}" class="img-fluid card">
+        </div>
+        <div class="col-md-4">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">${{ product.price }}</p>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'food:add_to_cart' product.id %}">Add to Cart</a>
+        </div>    
+        <br>
+    </div>
+    {% empty %}
+        <p>No products available.</p>
+    
+        
+    {% endfor %}
+
+    
+    
+    {% endblock %}
+</body>
+</html>
